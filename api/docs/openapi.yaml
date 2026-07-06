@@ -1,0 +1,497 @@
+# Documentation OpenAPI 3.0 de l'API.
+# Visualisable avec Swagger UI / Editor
+
+openapi: 3.0.3
+info:
+  title: API Gestionnaire de stock
+  description: >
+    API REST du gestionnaire de stock pour petite boutique. Consommée par le
+    client TUI (voir /tui). Le contrat détaillé se trouve dans CONTRAT_API.md
+    à la racine du dépôt.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+    description: Serveur de développement local
+
+tags:
+  - name: Auth
+  - name: Products
+  - name: Suppliers
+  - name: Movements
+  - name: Alerts
+  - name: Export
+  - name: Health
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Vérifie que le serveur est démarré
+      security: []
+      responses:
+        "200":
+          description: Serveur opérationnel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Crée un nouvel utilisateur
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterRequest" }
+      responses:
+        "201":
+          description: Utilisateur créé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Authentifie un utilisateur et retourne un JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginRequest" }
+      responses:
+        "200":
+          description: Connexion réussie
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LoginResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/products:
+    get:
+      tags: [Products]
+      summary: Liste les produits (recherche optionnelle)
+      parameters:
+        - name: search
+          in: query
+          description: Filtre sur le nom ou la référence (correspondance partielle)
+          schema: { type: string }
+      responses:
+        "200":
+          description: Liste des produits
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Product" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Products]
+      summary: Crée un nouveau produit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductRequest" }
+      responses:
+        "201":
+          description: Produit créé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /api/v1/products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      tags: [Products]
+      summary: Récupère un produit par son identifiant
+      responses:
+        "200":
+          description: Produit trouvé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      tags: [Products]
+      summary: Met à jour un produit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductRequest" }
+      responses:
+        "200":
+          description: Produit mis à jour
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Products]
+      summary: Supprime un produit
+      responses:
+        "204": { description: Produit supprimé }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/suppliers:
+    get:
+      tags: [Suppliers]
+      summary: Liste les fournisseurs
+      responses:
+        "200":
+          description: Liste des fournisseurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Supplier" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Suppliers]
+      summary: Crée un nouveau fournisseur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SupplierRequest" }
+      responses:
+        "201":
+          description: Fournisseur créé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Supplier" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/suppliers/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      tags: [Suppliers]
+      summary: Récupère un fournisseur par son identifiant
+      responses:
+        "200":
+          description: Fournisseur trouvé
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Supplier" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      tags: [Suppliers]
+      summary: Met à jour un fournisseur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SupplierRequest" }
+      responses:
+        "200":
+          description: Fournisseur mis à jour
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Supplier" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Suppliers]
+      summary: Supprime un fournisseur
+      responses:
+        "204": { description: Fournisseur supprimé }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/v1/movements:
+    get:
+      tags: [Movements]
+      summary: Liste l'historique des mouvements de stock (filtrable)
+      parameters:
+        - name: product_id
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: type
+          in: query
+          schema: { type: string, enum: [IN, OUT] }
+        - name: from
+          in: query
+          description: Borne basse (RFC3339)
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          description: Borne haute (RFC3339)
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: Liste des mouvements, du plus récent au plus ancien
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Movement" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Movements]
+      summary: Enregistre une entrée ou une sortie de stock
+      description: >
+        Ajuste automatiquement et atomiquement la quantité du produit
+        concerné. Une sortie (OUT) dont la quantité dépasse le stock
+        disponible est rejetée avec 409.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MovementRequest" }
+      responses:
+        "201":
+          description: Mouvement enregistré
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Movement" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /api/v1/alerts:
+    get:
+      tags: [Alerts]
+      summary: Liste les produits en dessous de leur seuil d'alerte
+      responses:
+        "200":
+          description: Seuil par défaut et produits en alerte
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AlertsResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/alerts/settings:
+    put:
+      tags: [Alerts]
+      summary: Modifie le seuil d'alerte par défaut global
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AlertSettingsRequest" }
+      responses:
+        "200":
+          description: Réglages mis à jour
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AlertSettings" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/export:
+    get:
+      tags: [Export]
+      summary: Exporte un instantané complet du stock (produits, fournisseurs, mouvements)
+      description: Consommé par le TUI pour son import et la mise en cache locale.
+      responses:
+        "200":
+          description: Instantané complet
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ExportResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Requête invalide
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Unauthorized:
+      description: Authentification manquante, invalide ou expirée
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: Ressource introuvable
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: Conflit (doublon, stock insuffisant, ...)
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string, example: "ressource introuvable" }
+
+    RegisterRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username: { type: string, minLength: 3, example: "alice" }
+        password: { type: string, minLength: 6, example: "password123" }
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username: { type: string, example: "alice" }
+        password: { type: string, example: "password123" }
+
+    User:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        username: { type: string, example: "alice" }
+        role: { type: string, example: "employee" }
+        created_at: { type: string, format: date-time }
+
+    LoginResponse:
+      type: object
+      properties:
+        token: { type: string, description: "JWT à envoyer dans Authorization: Bearer <token>" }
+        expires_at: { type: string, format: date-time }
+        user: { $ref: "#/components/schemas/User" }
+
+    Supplier:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string, example: "Fournisseur Dupont" }
+        email: { type: string, example: "contact@dupont.fr" }
+        phone: { type: string, example: "0102030405" }
+        address: { type: string, example: "12 rue des Lilas, 75001 Paris" }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    SupplierRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, example: "Fournisseur Dupont" }
+        email: { type: string, example: "contact@dupont.fr" }
+        phone: { type: string, example: "0102030405" }
+        address: { type: string, example: "12 rue des Lilas, 75001 Paris" }
+
+    Product:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string, example: "Café en grains 1kg" }
+        reference: { type: string, example: "CAF-1KG-001" }
+        quantity: { type: integer, example: 42 }
+        price: { type: number, format: double, example: 12.5 }
+        alert_threshold:
+          type: integer
+          nullable: true
+          description: "Seuil propre au produit ; si absent (null), le seuil par défaut global s'applique."
+          example: 10
+        supplier_id: { type: integer, format: int64, example: 2 }
+        supplier_name: { type: string, example: "Fournisseur Dupont" }
+        is_low_stock:
+          type: boolean
+          description: "Calculé par l'API : quantity <= seuil effectif (propre ou par défaut)."
+          example: false
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    ProductRequest:
+      type: object
+      required: [name, reference, supplier_id]
+      properties:
+        name: { type: string, example: "Café en grains 1kg" }
+        reference: { type: string, example: "CAF-1KG-001" }
+        quantity: { type: integer, minimum: 0, example: 42 }
+        price: { type: number, format: double, minimum: 0, example: 12.5 }
+        alert_threshold: { type: integer, nullable: true, example: 10 }
+        supplier_id: { type: integer, format: int64, example: 2 }
+
+    Movement:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        product_id: { type: integer, format: int64 }
+        product_name: { type: string, example: "Café en grains 1kg" }
+        type: { type: string, enum: [IN, OUT] }
+        quantity: { type: integer, example: 10 }
+        note: { type: string, example: "Réassort hebdomadaire" }
+        user_id: { type: integer, format: int64 }
+        username: { type: string, example: "alice" }
+        created_at: { type: string, format: date-time }
+
+    MovementRequest:
+      type: object
+      required: [product_id, type, quantity]
+      properties:
+        product_id: { type: integer, format: int64, example: 5 }
+        type: { type: string, enum: [IN, OUT] }
+        quantity: { type: integer, minimum: 1, example: 10 }
+        note: { type: string, example: "Réassort hebdomadaire" }
+
+    AlertSettings:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        default_threshold: { type: integer, example: 5 }
+        updated_at: { type: string, format: date-time }
+
+    AlertSettingsRequest:
+      type: object
+      required: [default_threshold]
+      properties:
+        default_threshold: { type: integer, minimum: 0, example: 5 }
+
+    AlertsResponse:
+      type: object
+      properties:
+        default_threshold: { type: integer, example: 5 }
+        low_stock_products:
+          type: array
+          items: { $ref: "#/components/schemas/Product" }
+
+    ExportResponse:
+      type: object
+      properties:
+        exported_at: { type: string, format: date-time }
+        products:
+          type: array
+          items: { $ref: "#/components/schemas/Product" }
+        suppliers:
+          type: array
+          items: { $ref: "#/components/schemas/Supplier" }
+        movements:
+          type: array
+          items: { $ref: "#/components/schemas/Movement" }
+
+security:
+  - bearerAuth: []

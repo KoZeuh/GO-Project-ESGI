@@ -1,0 +1,16 @@
+# Binaires Go
+*.exe
+*.exe~
+*.dll
+*.test
+*.out
+
+# Base de données SQLite locale et secrets
+api/data/
+api/.env
+tui/.env
+
+# Éditeurs / OS
+.vscode/
+.idea/
+Thumbs.db
