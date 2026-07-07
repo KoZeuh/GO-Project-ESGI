@@ -21,6 +21,10 @@ func main() {
 	}
 	defer db.Close()
 
+	if err := database.Seed(db); err != nil {
+		log.Fatalf("seed base de données : %v", err)
+	}
+
 	userRepo := repository.NewUserRepository(db)
 	supplierRepo := repository.NewSupplierRepository(db)
 	productRepo := repository.NewProductRepository(db)

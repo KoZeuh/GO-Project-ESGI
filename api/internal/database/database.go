@@ -11,6 +11,7 @@ import (
 	_ "modernc.org/sqlite" // driver pur Go, aucune dépendance CGO requise
 )
 
+//go:embed schema.sql
 var schema string
 
 // Connect ouvre la base SQLite située à dsn et applique le schéma (idempotent)
