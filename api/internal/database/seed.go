@@ -38,9 +38,9 @@ func Seed(db *sql.DB) error {
 	}
 
 	_, err = tx.Exec(`
-		INSERT INTO users (username, password_hash, role) VALUES
-		('admin',    ?, 'admin'),
-		('employee', ?, 'employee')
+		INSERT INTO users (username, password_hash) VALUES
+		('admin',    ?),
+		('employee', ?)
 	`, string(adminHash), string(empHash))
 	if err != nil {
 		return fmt.Errorf("seed users : %w", err)

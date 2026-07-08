@@ -16,7 +16,6 @@ import (
 const (
 	ContextUserID   = "user_id"
 	ContextUsername = "username"
-	ContextRole     = "role"
 )
 
 // Auth vérifie la présence et la validité d'un JWT dans l'en-tête "Authorization: Bearer <token>" et rejette la requête avec 401 sinon.
@@ -37,7 +36,6 @@ func Auth(authService *service.AuthService) gin.HandlerFunc {
 
 		c.Set(ContextUserID, claims.UserID)
 		c.Set(ContextUsername, claims.Username)
-		c.Set(ContextRole, claims.Role)
 		c.Next()
 	}
 }

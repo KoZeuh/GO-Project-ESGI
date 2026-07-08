@@ -20,7 +20,7 @@ func TestAuthService_RegisterAndLogin(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Register() error = %v", err)
 	}
-	if user.Username != "bob" || user.Role != "employee" {
+	if user.Username != "bob" {
 		t.Fatalf("Register() résultat inattendu = %+v", user)
 	}
 

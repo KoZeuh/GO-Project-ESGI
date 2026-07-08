@@ -28,7 +28,6 @@ type LoginRequest struct {
 type UserResponse struct {
 	ID        int64     `json:"id"`
 	Username  string    `json:"username"`
-	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -39,7 +38,7 @@ type LoginResponse struct {
 }
 
 func NewUserResponse(u *models.User) UserResponse {
-	return UserResponse{ID: u.ID, Username: u.Username, Role: u.Role, CreatedAt: u.CreatedAt}
+	return UserResponse{ID: u.ID, Username: u.Username, CreatedAt: u.CreatedAt}
 }
 
 // --- Produits ---

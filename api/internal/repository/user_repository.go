@@ -21,8 +21,8 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 // Create insère un nouvel utilisateur et renvoie son identifiant généré.
 func (r *UserRepository) Create(u *models.User) (int64, error) {
 	res, err := r.db.Exec(
-		`INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)`,
-		u.Username, u.PasswordHash, u.Role,
+		`INSERT INTO users (username, password_hash) VALUES (?, ?)`,
+		u.Username, u.PasswordHash,
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
@@ -36,7 +36,7 @@ func (r *UserRepository) Create(u *models.User) (int64, error) {
 // FindByUsername retourne l'utilisateur portant ce nom, ou ErrNotFound.
 func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 	row := r.db.QueryRow(
-		`SELECT id, username, password_hash, role, created_at FROM users WHERE username = ?`,
+		`SELECT id, username, password_hash, created_at FROM users WHERE username = ?`,
 		username,
 	)
 	return scanUser(row)
@@ -45,7 +45,7 @@ func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 // FindByID retourne l'utilisateur portant cet identifiant, ou ErrNotFound.
 func (r *UserRepository) FindByID(id int64) (*models.User, error) {
 	row := r.db.QueryRow(
-		`SELECT id, username, password_hash, role, created_at FROM users WHERE id = ?`,
+		`SELECT id, username, password_hash, created_at FROM users WHERE id = ?`,
 		id,
 	)
 	return scanUser(row)
@@ -53,7 +53,7 @@ func (r *UserRepository) FindByID(id int64) (*models.User, error) {
 
 func scanUser(row *sql.Row) (*models.User, error) {
 	var u models.User
-	err := row.Scan(&u.ID, &u.Username, &u.PasswordHash, &u.Role, &u.CreatedAt)
+	err := row.Scan(&u.ID, &u.Username, &u.PasswordHash, &u.CreatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, ErrNotFound
 	}

@@ -19,7 +19,6 @@ var ErrInvalidCredentials = errors.New("identifiants invalides")
 type Claims struct {
 	UserID   int64  `json:"user_id"`
 	Username string `json:"username"`
-	Role     string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -34,7 +33,7 @@ func NewAuthService(users *repository.UserRepository, jwtSecret string, expirati
 	return &AuthService{users: users, jwtSecret: []byte(jwtSecret), expiration: expiration}
 }
 
-// Register crée un nouvel utilisateur avec un mot de passe hashé (bcrypt). Le rôle par défaut est "employee" ; il n'y a pas de création d'admin via cette route publique, conformément à un usage boutique mono-équipe.
+// Register crée un nouvel utilisateur avec un mot de passe hashé (bcrypt).
 func (s *AuthService) Register(username, password string) (*models.User, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -44,7 +43,6 @@ func (s *AuthService) Register(username, password string) (*models.User, error) 
 	user := &models.User{
 		Username:     username,
 		PasswordHash: string(hash),
-		Role:         "employee",
 	}
 	id, err := s.users.Create(user)
 	if err != nil {
@@ -72,7 +70,6 @@ func (s *AuthService) Login(username, password string) (token string, expiresAt 
 	claims := Claims{
 		UserID:   user.ID,
 		Username: user.Username,
-		Role:     user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
