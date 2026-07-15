@@ -254,3 +254,11 @@ cd ../tui
 go build -o bin/tui ./cmd/tui
 ./bin/tui --api http://localhost:8080
 ```
+
+
+## Installer l'application via HomeBrew
+
+```
+brew tap KoZeuh/tap
+brew install stock-tui
+```
