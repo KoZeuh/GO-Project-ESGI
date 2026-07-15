@@ -98,6 +98,7 @@ brews:
       owner: KoZeuh
       name: homebrew-tap
       branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     directory: Formula
     homepage: "https://github.com/KoZeuh/GO-Project-ESGI"
     description: "Client terminal (TUI) pour la gestion de stock"
@@ -114,6 +115,7 @@ brews:
       owner: KoZeuh
       name: homebrew-tap
       branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     directory: Formula
     homepage: "https://github.com/KoZeuh/GO-Project-ESGI"
     description: "API REST de gestion de stock (Gin + SQLite)"
