@@ -1,0 +1,129 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+
+version: 2
+
+project_name: GO-Project-ESGI
+
+before:
+  hooks:
+    - cd api && go mod tidy && go test ./...
+    - cd tui && go mod tidy && go test ./...
+
+builds:
+  - id: stock-tui
+    dir: tui
+    main: ./cmd/tui
+    binary: stock-tui
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+  - id: stock-api
+    dir: api
+    main: ./cmd/api
+    binary: stock-api
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - id: stock-tui
+    ids:
+      - stock-tui
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "stock-tui_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE*
+      - README.md
+
+  - id: stock-api
+    ids:
+      - stock-api
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "stock-api_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE*
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+# Formules Homebrew classiques (gratuit avec GoReleaser OSS).
+# homebrew_casks (recommandé par GoReleaser) nécessite GoReleaser Pro.
+brews:
+  - name: stock-tui
+    ids:
+      - stock-tui
+    repository:
+      owner: KoZeuh
+      name: homebrew-tap
+      branch: main
+    directory: Formula
+    homepage: "https://github.com/KoZeuh/GO-Project-ESGI"
+    description: "Client terminal (TUI) pour la gestion de stock"
+    license: "MIT"
+    install: |
+      bin.install "stock-tui"
+    test: |
+      system "#{bin}/stock-tui", "-version"
+
+  - name: stock-api
+    ids:
+      - stock-api
+    repository:
+      owner: KoZeuh
+      name: homebrew-tap
+      branch: main
+    directory: Formula
+    homepage: "https://github.com/KoZeuh/GO-Project-ESGI"
+    description: "API REST de gestion de stock (Gin + SQLite)"
+    license: "MIT"
+    install: |
+      bin.install "stock-api"
+    test: |
+      system "#{bin}/stock-api", "-version"

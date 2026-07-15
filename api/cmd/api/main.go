@@ -3,6 +3,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 
 	"github.com/KoZeuh/GO-Project-ESGI/api/internal/config"
@@ -12,7 +14,17 @@ import (
 	"github.com/KoZeuh/GO-Project-ESGI/api/internal/service"
 )
 
+var version = "dev"
+
 func main() {
+	showVersion := flag.Bool("version", false, "Affiche la version et quitte")
+	flag.Parse()
+
+	if *showVersion {
+		fmt.Println(version)
+		return
+	}
+
 	cfg := config.Load()
 
 	db, err := database.Connect(cfg.DBPath)

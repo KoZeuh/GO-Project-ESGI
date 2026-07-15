@@ -14,10 +14,18 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+var version = "dev"
+
 func main() {
 	apiURL := flag.String("api", "http://localhost:8080", "URL de base de l'API REST")
 	useMock := flag.Bool("mock", false, "Utiliser le client mock (développement hors-ligne)")
+	showVersion := flag.Bool("version", false, "Affiche la version et quitte")
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Println(version)
+		return
+	}
 
 	var c client.Client
 	if *useMock {
