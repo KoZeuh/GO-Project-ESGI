@@ -25,6 +25,14 @@ jobs:
             api/go.sum
             tui/go.sum
 
+      - name: Test API
+        working-directory: api
+        run: go mod tidy && go test ./...
+
+      - name: Test TUI
+        working-directory: tui
+        run: go mod tidy && go test ./...
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:

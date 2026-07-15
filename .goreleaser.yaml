@@ -4,11 +4,6 @@ version: 2
 
 project_name: GO-Project-ESGI
 
-before:
-  hooks:
-    - cd api && go mod tidy && go test ./...
-    - cd tui && go mod tidy && go test ./...
-
 builds:
   - id: stock-tui
     dir: tui
