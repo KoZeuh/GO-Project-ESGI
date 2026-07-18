@@ -262,3 +262,28 @@ go build -o bin/tui ./cmd/tui
 brew tap KoZeuh/tap
 brew install stock-tui
 ```
+
+# Créer une nouvelle version
+
+```
+# 1. S'assurer que tout est à jour sur main
+git checkout main
+git pull origin main
+
+# 2. (si tu as des changements locaux) les committer et pousser
+git add .
+git commit -m "ton message"
+git push origin main
+
+# 3. Créer et pousser le tag (exemple : v0.1.2)
+git tag v0.1.2
+git push origin v0.1.2
+```
+
+Il faudra aussi mettre l'application à jour en local
+
+```
+brew update
+brew upgrade stock-tui
+stock-tui -version
+``` 
